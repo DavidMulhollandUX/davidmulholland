@@ -2,6 +2,7 @@
 import { getEmDashEntry } from "emdash";
 import { PortableText } from "emdash/ui";
 import Base from "../../layouts/Base.astro";
+import type { EmDashEntry, PageData } from "../../types/emdash-content";
 
 const { slug } = Astro.params;
 
@@ -16,19 +17,23 @@ if (!page) {
 }
 
 Astro.cache.set(cacheHint);
+
+const typedPage = page as unknown as EmDashEntry<PageData>;
 ---
 
 <Base
-	title={page.data.title}
-	content={{ collection: "pages", id: page.data.id, slug }}
+	title={typedPage.data.title ?? "Untitled"}
+	content={{ collection: "pages", id: typedPage.data.id, slug }}
 >
 	<article class="page-article">
 		<header class="page-header">
-			<h1 class="page-title" {...page.edit.title}>{page.data.title}</h1>
+			<h1 class="page-title" {...(typedPage.edit.title ?? {})}>
+				{typedPage.data.title}
+			</h1>
 		</header>
 
 		<div class="page-content">
-			<PortableText value={page.data.content} />
+			<PortableText value={typedPage.data.content} />
 		</div>
 	</article>
 </Base>

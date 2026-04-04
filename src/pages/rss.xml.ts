@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { getEmDashCollection } from "emdash";
+import type { EmDashEntry, PostData } from "../types/emdash-content";
 
 const siteTitle = "My Blog";
 const siteDescription = "A blog about software, design, and the occasional stray thought.";
@@ -11,8 +12,9 @@ export const GET: APIRoute = async ({ site, url }) => {
 		orderBy: { published_at: "desc" },
 		limit: 20,
 	});
+	const typedPosts = posts as unknown as EmDashEntry<PostData>[];
 
-	const items = posts
+	const items = typedPosts
 		.map((post) => {
 			if (!post.data.publishedAt) return null;
 			const pubDate = post.data.publishedAt.toUTCString();

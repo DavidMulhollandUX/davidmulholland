@@ -15,6 +15,7 @@ import {
 import Base from "../../layouts/Base.astro";
 import PostCard from "../../components/PostCard.astro";
 import { getReadingTime } from "../../utils/reading-time";
+import type { EmDashEntry, PostData } from "../../types/emdash-content";
 
 const { slug } = Astro.params;
 
@@ -29,6 +30,8 @@ if (!post) {
 }
 
 Astro.cache.set(cacheHint);
+
+const typedPost = post as unknown as EmDashEntry<PostData>;
 
 // Get featured image URL for OG fallback
 // The image may have src (external) or meta.storageKey (local)
@@ -51,10 +54,10 @@ function getImageUrl(img: unknown): string | undefined {
 	}
 	return undefined;
 }
-const featuredImageUrl = getImageUrl(post.data.featured_image);
+const featuredImageUrl = getImageUrl(typedPost.data.featured_image);
 
 // Generate SEO meta from content
-const seo = getSeoMeta(post, {
+const seo = getSeoMeta(typedPost, {
 	siteTitle: "My Blog",
 	siteUrl: Astro.url.origin,
 	path: `/posts/${slug}`,
@@ -63,13 +66,13 @@ const seo = getSeoMeta(post, {
 
 // Get tags for this post
 // Note: post.id is the slug, post.data.id is the database ULID
-const tags = await getEntryTerms("posts", post.data.id, "tag");
+const tags = await getEntryTerms("posts", typedPost.data.id, "tag");
 
 // Bylines are already hydrated by getEmDashEntry
-const bylines = post.data.bylines ?? [];
+const bylines = typedPost.data.bylines ?? [];
 
 // Get reading time
-const readingTime = getReadingTime(post.data.content);
+const readingTime = getReadingTime(typedPost.data.content);
 
 // Get other posts for "More posts" section, with their tags
 // Fetch a few extra in case the current post is among them
@@ -77,7 +80,9 @@ const { entries: recentPosts } = await getEmDashCollection("posts", {
 	orderBy: { published_at: "desc" },
 	limit: 4,
 });
-const otherPosts = recentPosts.filter((p) => p.id !== post.id).slice(0, 3);
+const otherPosts = (recentPosts as unknown as EmDashEntry<PostData>[])
+	.filter((p) => p.id !== typedPost.id)
+	.slice(0, 3);
 
 // Fetch tags for related posts (bylines are already hydrated by getEmDashCollection)
 const otherPostsWithTags = await Promise.all(
@@ -89,7 +94,7 @@ const otherPostsWithTags = await Promise.all(
 );
 
 const publishDate =
-	post.data.publishedAt?.toLocaleDateString("en-US", {
+	typedPost.data.publishedAt?.toLocaleDateString("en-US", {
 		year: "numeric",
 		month: "long",
 		day: "numeric",
@@ -103,16 +108,16 @@ const publishDate =
 	canonical={seo.canonical}
 	robots={seo.robots}
 	type="article"
-	publishedTime={post.data.publishedAt?.toISOString() ?? null}
-	modifiedTime={post.data.updatedAt.toISOString()}
-	content={{ collection: "posts", id: post.data.id, slug }}
+	publishedTime={typedPost.data.publishedAt?.toISOString() ?? null}
+	modifiedTime={typedPost.data.updatedAt?.toISOString() ?? null}
+	content={{ collection: "posts", id: typedPost.data.id, slug }}
 >
 	<article class="article">
 		{/* Hero: Full-width featured image */}
 		{
-			post.data.featured_image && (
-				<div class="article-hero" {...post.edit.featured_image}>
-					<Image image={post.data.featured_image} />
+			typedPost.data.featured_image && (
+				<div class="article-hero" {...(typedPost.edit.featured_image ?? {})}>
+					<Image image={typedPost.data.featured_image} />
 				</div>
 			)
 		}
@@ -210,21 +215,23 @@ const publishDate =
 						}
 						<span>{readingTime} min read</span>
 					</div>
-					<h1 class="article-title" {...post.edit.title}>{post.data.title}</h1>
+					<h1 class="article-title" {...(typedPost.edit.title ?? {})}>
+						{typedPost.data.title}
+					</h1>
 					{
-						post.data.excerpt && (
-							<p class="article-excerpt">{post.data.excerpt}</p>
+						typedPost.data.excerpt && (
+							<p class="article-excerpt">{typedPost.data.excerpt}</p>
 						)
 					}
 				</header>
 
 				<div class="article-content">
-					<PortableText value={post.data.content} />
+					<PortableText value={typedPost.data.content} />
 				</div>
 
 				<div class="article-comments">
-					<Comments collection="posts" contentId={post.data.id} threaded />
-					<CommentForm collection="posts" contentId={post.data.id} />
+					<Comments collection="posts" contentId={typedPost.data.id} threaded />
+					<CommentForm collection="posts" contentId={typedPost.data.id} />
 				</div>
 			</div>
 
@@ -254,7 +261,7 @@ const publishDate =
 						{otherPostsWithTags.map(
 							({ post: p, tags: postTags, bylines: postBylines }) => (
 								<PostCard
-									title={p.data.title}
+									title={p.data.title ?? "Untitled"}
 									excerpt={p.data.excerpt}
 									featuredImage={p.data.featured_image}
 									href={`/posts/${p.id}`}

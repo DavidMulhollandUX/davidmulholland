@@ -2,12 +2,14 @@
 import { getEmDashCollection, getEntryTerms } from "emdash";
 import Base from "../../layouts/Base.astro";
 import { getReadingTime } from "../../utils/reading-time";
+import type { EmDashEntry, PostData } from "../../types/emdash-content";
 
 const { entries: posts, cacheHint } = await getEmDashCollection("posts");
+const typedPosts = posts as unknown as EmDashEntry<PostData>[];
 
 Astro.cache.set(cacheHint);
 
-const sortedPosts = posts.toSorted((a, b) => {
+const sortedPosts = typedPosts.toSorted((a, b) => {
 	const dateA = a.data.publishedAt?.getTime() ?? 0;
 	const dateB = b.data.publishedAt?.getTime() ?? 0;
 	return dateB - dateA;
@@ -35,8 +37,8 @@ const formatDate = (date: Date) =>
 		<header class="page-header">
 			<h1 class="page-title">All Posts</h1>
 			<p class="page-description">
-				{posts.length}
-				{posts.length === 1 ? "article" : "articles"}
+				{typedPosts.length}
+				{typedPosts.length === 1 ? "article" : "articles"}
 			</p>
 		</header>
 
