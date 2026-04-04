@@ -8,7 +8,12 @@
 		"build": "astro build",
 		"preview": "astro preview",
 		"deploy": "wrangler deploy",
-		"typecheck": "astro check" 
+		"typecheck": "astro check",
+		"migrate:wp:preflight": "node ./scripts/wp-emdash-preflight.mjs",
+		"migrate:wp:sample": "node ./scripts/wp-emdash-sample.mjs",
+		"migrate:wp:to-seed": "node ./scripts/wp-emdash-to-seed.mjs",
+		"migrate:wp:validate": "npx emdash seed seed/seed.wp-import.json --validate",
+		"migrate:wp:apply": "npx emdash seed seed/seed.wp-import.json"
 	},
 	"dependencies": {
 		"@astrojs/cloudflare": "^13.1.6",

@@ -1,0 +1,11 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "emdash-import-apply",
+			"type": "shell",
+			"command": "pnpm exec emdash seed seed/seed.wp-import.json --validate && pnpm exec emdash seed seed/seed.wp-import.json",
+			"isBackground": false
+		}
+	]
+}
