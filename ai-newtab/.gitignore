@@ -1,0 +1,5 @@
+node_modules
+.output
+.wxt
+harness/out
+harness/.state.json

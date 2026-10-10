@@ -1,0 +1,11 @@
+[
+  { "url": "https://news.ycombinator.com/", "title": "Hacker News", "visitCount": 42, "typedCount": 20 },
+  { "url": "https://news.ycombinator.com/item?id=1", "title": "Show HN: something", "visitCount": 3 },
+  { "url": "https://lobste.rs/", "title": "Lobsters", "visitCount": 12, "typedCount": 4 },
+  { "url": "https://www.theverge.com/", "title": "The Verge", "visitCount": 9 },
+  { "url": "https://github.com/trending", "title": "Trending repositories on GitHub today", "visitCount": 6 },
+  { "url": "https://www.bbc.com/news", "title": "BBC News - Home", "visitCount": 11, "typedCount": 3 },
+  { "url": "https://mail.google.com/mail/u/0/#inbox", "title": "Inbox (3)", "visitCount": 80 },
+  { "url": "https://www.google.com/search?q=weather", "title": "weather - Google Search", "visitCount": 15 },
+  { "url": "https://www.mybank.com/accounts", "title": "Accounts", "visitCount": 4 }
+]

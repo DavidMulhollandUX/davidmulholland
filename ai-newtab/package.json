@@ -1,0 +1,13 @@
+{
+  "name": "ai-newtab",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.11.1",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "pnpm --filter @ai-newtab/extension build",
+    "dev": "pnpm --filter @ai-newtab/extension dev",
+    "typecheck": "pnpm -r typecheck",
+    "harness": "pnpm --filter @ai-newtab/harness start"
+  }
+}
